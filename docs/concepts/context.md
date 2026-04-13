@@ -116,7 +116,7 @@ Large files are truncated per-file using `agents.defaults.bootstrapMaxChars` (de
 
 When truncation occurs, the runtime can inject an in-prompt warning block under Project Context. Configure this with `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; default `once`).
 
-## Skills: what’s injected vs loaded on-demand
+## Skills: injected vs loaded on-demand
 
 The system prompt includes a compact **skills list** (name + description + location). This list has real overhead.
 
@@ -131,7 +131,7 @@ Tools affect context in two ways:
 
 `/context detail` breaks down the biggest tool schemas so you can see what dominates.
 
-## Commands, directives, and “inline shortcuts”
+## Commands, directives, and "inline shortcuts"
 
 Slash commands are handled by the Gateway. There are a few different behaviors:
 
@@ -170,3 +170,10 @@ pluggable interface, lifecycle hooks, and configuration.
 - `System prompt (estimate)` = computed on the fly when no run report exists (or when running via a CLI backend that doesn’t generate the report).
 
 Either way, it reports sizes and top contributors; it does **not** dump the full system prompt or tool schemas.
+
+## Related
+
+- [Context Engine](/concepts/context-engine) — custom context injection via plugins
+- [Compaction](/concepts/compaction) — summarizing long conversations
+- [System Prompt](/concepts/system-prompt) — how the system prompt is built
+- [Agent Loop](/concepts/agent-loop) — the full agent execution cycle

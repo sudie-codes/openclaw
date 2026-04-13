@@ -1,6 +1,8 @@
 import type { TSchema } from "@sinclair/typebox";
 import type { OpenClawConfig } from "../../config/config.js";
+import { formatErrorMessage } from "../../infra/errors.js";
 import { defaultRuntime } from "../../runtime.js";
+import { normalizeOptionalString } from "../../shared/string-coerce.js";
 import { normalizeAnyChannelId } from "../registry.js";
 import { getChannelPlugin, listChannelPlugins } from "./index.js";
 import type { ChannelMessageCapability } from "./message-capabilities.js";
@@ -17,6 +19,8 @@ export type ChannelMessageActionDiscoveryInput = {
   currentChannelProvider?: string | null;
   currentChannelId?: string | null;
   currentThreadTs?: string | null;
+  currentThreadRootId?: string | null;
+  currentParentConversationId?: string | null;
   currentMessageId?: string | number | null;
   accountId?: string | null;
   sessionKey?: string | null;
@@ -30,12 +34,7 @@ type ChannelActions = NonNullable<NonNullable<ReturnType<typeof getChannelPlugin
 const loggedMessageActionErrors = new Set<string>();
 
 export function resolveMessageActionDiscoveryChannelId(raw?: string | null): string | undefined {
-  const normalized = normalizeAnyChannelId(raw);
-  if (normalized) {
-    return normalized;
-  }
-  const trimmed = raw?.trim();
-  return trimmed || undefined;
+  return normalizeAnyChannelId(raw) ?? normalizeOptionalString(raw);
 }
 
 export function createMessageActionDiscoveryContext(
@@ -49,6 +48,8 @@ export function createMessageActionDiscoveryContext(
     currentChannelId: params.currentChannelId,
     currentChannelProvider,
     currentThreadTs: params.currentThreadTs,
+    currentThreadRootId: params.currentThreadRootId,
+    currentParentConversationId: params.currentParentConversationId,
     currentMessageId: params.currentMessageId,
     accountId: params.accountId,
     sessionKey: params.sessionKey,
@@ -63,7 +64,7 @@ function logMessageActionError(params: {
   operation: "describeMessageTool";
   error: unknown;
 }) {
-  const message = params.error instanceof Error ? params.error.message : String(params.error);
+  const message = formatErrorMessage(params.error);
   const key = `${params.pluginId}:${params.operation}:${message}`;
   if (loggedMessageActionErrors.has(key)) {
     return;
@@ -181,6 +182,8 @@ export function listChannelMessageCapabilitiesForChannel(params: {
   channel?: string;
   currentChannelId?: string | null;
   currentThreadTs?: string | null;
+  currentThreadRootId?: string | null;
+  currentParentConversationId?: string | null;
   currentMessageId?: string | number | null;
   accountId?: string | null;
   sessionKey?: string | null;
@@ -224,6 +227,8 @@ export function resolveChannelMessageToolSchemaProperties(params: {
   channel?: string;
   currentChannelId?: string | null;
   currentThreadTs?: string | null;
+  currentThreadRootId?: string | null;
+  currentParentConversationId?: string | null;
   currentMessageId?: string | number | null;
   accountId?: string | null;
   sessionKey?: string | null;
@@ -272,6 +277,8 @@ export function channelSupportsMessageCapabilityForChannel(
     channel?: string;
     currentChannelId?: string | null;
     currentThreadTs?: string | null;
+    currentThreadRootId?: string | null;
+    currentParentConversationId?: string | null;
     currentMessageId?: string | number | null;
     accountId?: string | null;
     sessionKey?: string | null;

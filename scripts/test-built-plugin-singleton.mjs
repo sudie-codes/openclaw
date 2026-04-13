@@ -3,7 +3,10 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { installProcessWarningFilter } from "./process-warning-filter.mjs";
 import { stageBundledPluginRuntime } from "./stage-bundled-plugin-runtime.mjs";
+
+installProcessWarningFilter();
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const smokeEntryPath = path.join(repoRoot, "dist", "plugins", "build-smoke-entry.js");
@@ -130,7 +133,7 @@ const record = registry.plugins.find((entry) => entry.id === pluginId);
 assert.ok(record, "smoke plugin missing from registry");
 assert.equal(record.status, "loaded", record.error ?? "smoke plugin failed to load");
 
-assert.deepEqual(getPluginCommandSpecs("telegram"), [
+assert.deepEqual(getPluginCommandSpecs(), [
   { name: "pair", description: "Pair a device", acceptsArgs: true },
 ]);
 

@@ -1,16 +1,15 @@
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk/account-id";
+import {
+  hasConfiguredSecretInput,
+  normalizeSecretInputString,
+} from "openclaw/plugin-sdk/secret-input";
+import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
 import {
   mergeDiscordAccountConfig,
   resolveDefaultDiscordAccountId,
   resolveDiscordAccountConfig,
 } from "./accounts.js";
-import {
-  DEFAULT_ACCOUNT_ID,
-  normalizeAccountId,
-  hasConfiguredSecretInput,
-  normalizeSecretInputString,
-  type OpenClawConfig,
-  type DiscordAccountConfig,
-} from "./runtime-api.js";
+import type { DiscordAccountConfig, OpenClawConfig } from "./runtime-api.js";
 
 export type DiscordCredentialStatus = "available" | "configured_unavailable" | "missing";
 
@@ -68,7 +67,7 @@ export function inspectDiscordAccount(params: {
     return {
       accountId,
       enabled,
-      name: merged.name?.trim() || undefined,
+      name: normalizeOptionalString(merged.name),
       token: accountToken.token,
       tokenSource: accountToken.tokenSource,
       tokenStatus: accountToken.tokenStatus,
@@ -80,7 +79,7 @@ export function inspectDiscordAccount(params: {
     return {
       accountId,
       enabled,
-      name: merged.name?.trim() || undefined,
+      name: normalizeOptionalString(merged.name),
       token: "",
       tokenSource: "none",
       tokenStatus: "missing",
@@ -94,7 +93,7 @@ export function inspectDiscordAccount(params: {
     return {
       accountId,
       enabled,
-      name: merged.name?.trim() || undefined,
+      name: normalizeOptionalString(merged.name),
       token: channelToken.token,
       tokenSource: channelToken.tokenSource,
       tokenStatus: channelToken.tokenStatus,
@@ -111,7 +110,7 @@ export function inspectDiscordAccount(params: {
     return {
       accountId,
       enabled,
-      name: merged.name?.trim() || undefined,
+      name: normalizeOptionalString(merged.name),
       token: envToken.replace(/^Bot\s+/i, ""),
       tokenSource: "env",
       tokenStatus: "available",
@@ -123,7 +122,7 @@ export function inspectDiscordAccount(params: {
   return {
     accountId,
     enabled,
-    name: merged.name?.trim() || undefined,
+    name: normalizeOptionalString(merged.name),
     token: "",
     tokenSource: "none",
     tokenStatus: "missing",
